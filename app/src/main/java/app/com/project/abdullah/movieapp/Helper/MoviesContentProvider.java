@@ -52,7 +52,7 @@ public class MoviesContentProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                cursor.close();
+                /*cursor.close();*/
                 break;
             case MOVIES_WITH_ID:
                 // Get the id from the URI
@@ -70,7 +70,7 @@ public class MoviesContentProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                cursor.close();
+                /*cursor.close();*/
                 break;
 
             default:

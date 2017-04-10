@@ -4,14 +4,12 @@ import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,10 +213,11 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
     }
 
     void addInFavouriteMovies(ArrayList<MovieDetailData> movieDetailData) {
-        ContentValues[] values = null;
+        ContentValues[] values = new ContentValues[]{};
+
         for (int i = 0; i < movieDetailData.size(); i++) {
             Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
-                    null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.get(i).getId()}, null);
+                    null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.get(i).getId()}, MoviesContract.MoviesEntry.Id);
             // Cursor cursor = moviesDBHelper.get_if_exist(moviesDBHelper, movieDetailData.get(i).getId());
             if (cursor == null || cursor.getCount() == 0) {
                 //moviesDBHelper.putInFavourite(moviesDBHelper, movieDetailData.get(i));
@@ -239,17 +238,18 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
                 contentValues.put(MoviesContract.MoviesEntry.Title, movieDetailData.get(i).getTitle());
                 values[i] = contentValues;
             }
-            if (values != null) {
-                int uri = getActivity().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, values);
+        }
+        if (values != null) {
+            int uri = getActivity().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, values);
                /* if (uri != null) {
                     Log.d("insert uri:", "" + uri.toString());
                 }*/
-            }
+
            /* if (c.getCount() == 0)
                 localDB.putInFavourite(localDB, movieDetailDatas.get(i));*/
-        }
-
     }
+
+}
 
     private void LoadGrid(ArrayList<MovieDetailData> movieDetailDatas) {
 
