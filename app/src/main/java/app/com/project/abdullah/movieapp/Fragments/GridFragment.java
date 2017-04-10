@@ -65,7 +65,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
     public void onResume() {
         super.onResume();
         if (mListState != null) {
-            mLayoutManager.onRestoreInstanceState(mListState);
+            mainRecycler.getLayoutManager().onRestoreInstanceState(mListState);
         }
     }
     @Override
@@ -73,7 +73,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
         super.onSaveInstanceState(outState);
         outState.putParcelable("moviesData", moviesData);
         mListState =  mLayoutManager.onSaveInstanceState();
-        outState.putParcelable("LIST_STATE_KEY", mListState);
+        outState.putParcelable("LIST_STATE_KEY", mainRecycler.getLayoutManager().onSaveInstanceState());
         // Save away the original text, so we still have it if the activity
         // needs to be killed while paused.
     }
@@ -84,6 +84,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
         if (savedInstanceState != null) {
             mListState  = savedInstanceState.getParcelable("LIST_STATE_KEY");
             moviesData = savedInstanceState.getParcelable("moviesData");
+            mainRecycler.getLayoutManager().onRestoreInstanceState(mListState);
             if (moviesData != null)
                 LoadGrid(moviesData.getResults());
         } else
