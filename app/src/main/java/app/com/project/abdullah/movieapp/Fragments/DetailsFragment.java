@@ -114,22 +114,46 @@ public class DetailsFragment extends Fragment {
 
         loadTrialData(movieDetailData.getId());
         loadReviewData(movieDetailData.getId());
+        String[] id = new String[]{movieDetailData.getId()};
+        Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI.withAppendedPath(
+                MoviesContract.MoviesEntry.CONTENT_URI,movieDetailData.getId()),
+                null, MoviesContract.MoviesEntry.Id + "=?", id, MoviesContract.MoviesEntry.Id);
+        String fav = "0";
+        int c = cursor.getCount();
+        if (c != 0)
+            fav = cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.Favourite));
+        if (fav.equals("0"))
+            favourite.setText("" + getActivity().getResources().getString(R.string.favourit));
+        else
+            favourite.setText("" + getActivity().getResources().getString(R.string.unfavourit));
 
         //checkIfFavourite();
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MoviesDBHelper moviesDBHelper = new MoviesDBHelper(getActivity());
-                Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
+                final Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
                         null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.getId()}, MoviesContract.MoviesEntry.Id);
+                String fav = "0";
+                if (cursor.getCount() != 0)
+                    fav = cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.Favourite));
+                if (fav.equals("0")) {
+                    Toast.makeText(getActivity(), "This Movie added Successfully", Toast.LENGTH_SHORT).show();
+                    setAsFavouriteMovie(movieDetailData, movieDetailData.getId(), "1");
+                    favourite.setText("" + getActivity().getResources().getString(R.string.unfavourit));
+                } else {
+                    favourite.setText("" + getActivity().getResources().getString(R.string.favourit));
+                    Toast.makeText(getActivity(), "This Movie removed Successfully", Toast.LENGTH_SHORT).show();
+                    setAsFavouriteMovie(movieDetailData, movieDetailData.getId(), "0");
+
+                }
 
                 // LocalDB localDB = new LocalDB(getActivity().getApplicationContext());
                 //Cursor cursor = moviesDBHelper.get_if_exist(moviesDBHelper, movieDetailData.getId());
-                if (cursor.getCount() != 0) {
-                    //setAsFavouriteMovie(movieDetailData, movieDetailData.getId());
-                    moviesDBHelper.SetFavourite(moviesDBHelper, movieDetailData.getId());
-                    Toast.makeText(getActivity(), "This Movie added Successfully", Toast.LENGTH_SHORT).show();
-                }
+                /*if (cursor.getCount() != 0) {
+                    setAsFavouriteMovie(movieDetailData, movieDetailData.getId());
+                    //moviesDBHelper.SetFavourite(moviesDBHelper, movieDetailData.getId());
+                }*/
                 favourite.setBackgroundColor(getResources().getColor(R.color.fav_bg));
 
 
@@ -155,12 +179,12 @@ public class DetailsFragment extends Fragment {
         return view;
     }
 
-    private void setAsFavouriteMovie(MovieDetailData movieDetailData, String movieId) {
+    private void setAsFavouriteMovie(MovieDetailData movieDetailData, String movieId, String fav) {
         ContentValues contentValues = new ContentValues();
        /* contentValues.put(MoviesContract.MoviesEntry.Id, movieDetailData.getId());
         contentValues.put(MoviesContract.MoviesEntry.Adult, movieDetailData.getAdult());
         contentValues.put(MoviesContract.MoviesEntry.OriginalLanguage, movieDetailData.getOriginal_language());*/
-        contentValues.put(MoviesContract.MoviesEntry.Favourite, "1");
+        contentValues.put(MoviesContract.MoviesEntry.Favourite, fav);
         /*contentValues.put(MoviesContract.MoviesEntry.OriginalTitle, movieDetailData.getOriginal_title());
         contentValues.put(MoviesContract.MoviesEntry.Popularity, movieDetailData.getPopularity());
         contentValues.put(MoviesContract.MoviesEntry.VoteCount, movieDetailData.getVote_count());

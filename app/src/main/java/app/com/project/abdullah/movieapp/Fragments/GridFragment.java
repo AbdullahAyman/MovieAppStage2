@@ -106,7 +106,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
         moviesDBHelper = new MoviesDBHelper(getActivity());
 
         // localDB = new LocalDB(getActivity().getApplicationContext());
-        getData();
+        //getData();
        /* MainGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
