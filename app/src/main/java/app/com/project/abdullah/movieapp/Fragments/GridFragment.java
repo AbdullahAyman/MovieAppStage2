@@ -54,6 +54,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
     MoviesDBHelper moviesDBHelper;
     RecyclerView.LayoutManager mLayoutManager;
     Parcelable mListState;
+
     public GridFragment() {
     }
 
@@ -68,11 +69,12 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
             mainRecycler.getLayoutManager().onRestoreInstanceState(mListState);
         }
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable("moviesData", moviesData);
-        mListState =  mLayoutManager.onSaveInstanceState();
+        mListState = mLayoutManager.onSaveInstanceState();
         outState.putParcelable("LIST_STATE_KEY", mainRecycler.getLayoutManager().onSaveInstanceState());
         // Save away the original text, so we still have it if the activity
         // needs to be killed while paused.
@@ -82,7 +84,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
     public void onViewStateRestored(Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            mListState  = savedInstanceState.getParcelable("LIST_STATE_KEY");
+            mListState = savedInstanceState.getParcelable("LIST_STATE_KEY");
             moviesData = savedInstanceState.getParcelable("moviesData");
             mainRecycler.getLayoutManager().onRestoreInstanceState(mListState);
             if (moviesData != null)
@@ -98,13 +100,13 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
                 container, false);
         /*MainGrid = (GridView) view.findViewById(R.id.main_grid);*/
         mainRecycler = (RecyclerView) view.findViewById(R.id.recycler_view);
-         mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        mLayoutManager = new GridLayoutManager(getActivity(), 2);
         mainRecycler.setLayoutManager(mLayoutManager);
         mainRecycler.setItemAnimator(new DefaultItemAnimator());
         moviesDBHelper = new MoviesDBHelper(getActivity());
 
         // localDB = new LocalDB(getActivity().getApplicationContext());
-        //getData();
+        getData();
        /* MainGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -213,6 +215,7 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
     }
 
     void addInFavouriteMovies(ArrayList<MovieDetailData> movieDetailData) {
+        ContentValues[] values = null;
         for (int i = 0; i < movieDetailData.size(); i++) {
             Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
                     null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.get(i).getId()}, null);
@@ -234,11 +237,13 @@ public class GridFragment extends Fragment implements OnExecuteEnd, CallBackInte
                 contentValues.put(MoviesContract.MoviesEntry.VoteAverage, movieDetailData.get(i).getVote_average());
                 contentValues.put(MoviesContract.MoviesEntry.Video, movieDetailData.get(i).getVideo());
                 contentValues.put(MoviesContract.MoviesEntry.Title, movieDetailData.get(i).getTitle());
-
-                Uri uri = getActivity().getContentResolver().insert(MoviesContract.MoviesEntry.CONTENT_URI, contentValues);
-                if (uri != null) {
+                values[i] = contentValues;
+            }
+            if (values != null) {
+                int uri = getActivity().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, values);
+               /* if (uri != null) {
                     Log.d("insert uri:", "" + uri.toString());
-                }
+                }*/
             }
            /* if (c.getCount() == 0)
                 localDB.putInFavourite(localDB, movieDetailDatas.get(i));*/

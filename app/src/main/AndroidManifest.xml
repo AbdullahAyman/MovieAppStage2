@@ -29,6 +29,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.com.project.abdullah.movieapp.Activity.MainActivity" />
         </activity>
+        <provider
+            android:authorities="app.com.project.abdullah.movieapp"
+            android:name="app.com.project.abdullah.movieapp.Helper.MoviesContentProvider"
+            android:exported="false"/>//set to true if you want other apps to access it
     </application>
 
 </manifest>
