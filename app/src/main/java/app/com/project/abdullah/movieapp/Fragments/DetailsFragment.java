@@ -121,7 +121,8 @@ public class DetailsFragment extends Fragment {
             public void onClick(View v) {
                 MoviesDBHelper moviesDBHelper = new MoviesDBHelper(getActivity());
                 Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
-                        null, MoviesContract.MoviesEntry.Id + "=" + movieDetailData.getId(), new String[]{movieDetailData.getId()}, null);
+                        null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.getId()}, MoviesContract.MoviesEntry.Id);
+
                 // LocalDB localDB = new LocalDB(getActivity().getApplicationContext());
                 //Cursor cursor = moviesDBHelper.get_if_exist(moviesDBHelper, movieDetailData.getId());
                 if (cursor.getCount() != 0) {
