@@ -37,7 +37,6 @@ import app.com.project.abdullah.movieapp.Adapter.ReviewsAdapter;
 import app.com.project.abdullah.movieapp.BuildConfig;
 import app.com.project.abdullah.movieapp.Helper.LocalDB;
 import app.com.project.abdullah.movieapp.Helper.MoviesContract;
-import app.com.project.abdullah.movieapp.Helper.MoviesDBHelper;
 import app.com.project.abdullah.movieapp.Interface.OnExecuteEnd;
 import app.com.project.abdullah.movieapp.Model.MovieDetailData;
 import app.com.project.abdullah.movieapp.Model.ReviewsArrayData;
@@ -66,6 +65,7 @@ public class DetailsFragment extends Fragment {
     Button favourite;
     AlertDialog dialog;
     ArrayList<TrailerArrayData> trailerArrayDatas;
+    String fav = "0";
 
     public DetailsFragment(MovieDetailData movieDetailData) {
         this.movieDetailData = movieDetailData;
@@ -114,39 +114,39 @@ public class DetailsFragment extends Fragment {
 
         loadTrialData(movieDetailData.getId());
         loadReviewData(movieDetailData.getId());
-        String[] id = new String[]{movieDetailData.getId()};
-        Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI.withAppendedPath(
-                MoviesContract.MoviesEntry.CONTENT_URI,movieDetailData.getId()),
-                null, MoviesContract.MoviesEntry.Id + "=?", id, MoviesContract.MoviesEntry.Id);
-        String fav = "0";
+        final String[] id = new String[]{movieDetailData.getId()};
+        Cursor cursor = getActivity().getContentResolver().query(Uri.withAppendedPath(
+                MoviesContract.MoviesEntry.CONTENT_URI, movieDetailData.getId()),
+                null, null /*MoviesContract.MoviesEntry.Id + " LIKE ?"*//*+movieDetailData.getId()*/, id, MoviesContract.MoviesEntry.Id);
         int c = cursor.getCount();
-        if (c != 0)
-            fav = cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.Favourite));
-        if (fav.equals("0"))
-            favourite.setText("" + getActivity().getResources().getString(R.string.favourit));
-        else
-            favourite.setText("" + getActivity().getResources().getString(R.string.unfavourit));
+        cursor.moveToFirst();
+        do {
+            if (c != 0)
+                fav = cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.Favourite));
+            if (fav.equals("0")) {
+                favourite.setText("" + getActivity().getResources().getString(R.string.favourit));
+            } else {
+                favourite.setText("" + getActivity().getResources().getString(R.string.unfavourit));
+            }
 
+        } while (cursor.moveToNext());
         //checkIfFavourite();
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MoviesDBHelper moviesDBHelper = new MoviesDBHelper(getActivity());
-                final Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
-                        null, MoviesContract.MoviesEntry.Id + "=?", new String[]{movieDetailData.getId()}, MoviesContract.MoviesEntry.Id);
-                String fav = "0";
-                if (cursor.getCount() != 0)
-                    fav = cursor.getString(cursor.getColumnIndex(MoviesContract.MoviesEntry.Favourite));
                 if (fav.equals("0")) {
+                    fav = "1";
                     Toast.makeText(getActivity(), "This Movie added Successfully", Toast.LENGTH_SHORT).show();
                     setAsFavouriteMovie(movieDetailData, movieDetailData.getId(), "1");
                     favourite.setText("" + getActivity().getResources().getString(R.string.unfavourit));
                 } else {
+                    fav = "0";
                     favourite.setText("" + getActivity().getResources().getString(R.string.favourit));
                     Toast.makeText(getActivity(), "This Movie removed Successfully", Toast.LENGTH_SHORT).show();
                     setAsFavouriteMovie(movieDetailData, movieDetailData.getId(), "0");
 
                 }
+
 
                 // LocalDB localDB = new LocalDB(getActivity().getApplicationContext());
                 //Cursor cursor = moviesDBHelper.get_if_exist(moviesDBHelper, movieDetailData.getId());
@@ -196,7 +196,8 @@ public class DetailsFragment extends Fragment {
         contentValues.put(MoviesContract.MoviesEntry.Video, movieDetailData.getVideo());
         contentValues.put(MoviesContract.MoviesEntry.Title, movieDetailData.getTitle());
 */
-        int count = getActivity().getContentResolver().update(MoviesContract.MoviesEntry.CONTENT_URI, contentValues,
+        int count = getActivity().getContentResolver().update(Uri.withAppendedPath(
+                MoviesContract.MoviesEntry.CONTENT_URI, movieId), contentValues,
                 MoviesContract.MoviesEntry.Id + "=?", new String[]{movieId});
         if (count != 0) {
             Log.d("updated id:", movieId);

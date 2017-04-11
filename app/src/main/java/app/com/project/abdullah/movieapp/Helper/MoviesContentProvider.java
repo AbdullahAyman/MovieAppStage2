@@ -59,24 +59,18 @@ public class MoviesContentProvider extends ContentProvider {
                 String id = uri.getPathSegments().get(1);
 
                 // Selection is the _ID column = ?, and the Selection args = the row ID from the URI
-                String mSelection = MoviesContract.MoviesEntry.Id + "="+id;
-                String[] mSelectionArgs = new String[]{id};
-
                 // Construct a query as you would normally, passing in the selection/args
-                cursor = db.query(MoviesContract.MoviesEntry.TableName,
-                        projection,
-                        mSelection,
-                        mSelectionArgs,
-                        null,
-                        null,
-                        sortOrder);
                 /*cursor.close();*/
+                String _SELECT_Data = "select * from " + MoviesContract.MoviesEntry.TableName + " where " + MoviesContract.MoviesEntry.Id + " = " + id;
+
+                cursor = db.rawQuery(_SELECT_Data, null);
                 break;
 
             default:
                 throw new UnsupportedOperationException("unknown URi: " + uri);
         }
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
