@@ -44,17 +44,18 @@ public class MainActivity extends AppCompatActivity implements CallBackInterface
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         back = (ImageView) findViewById(R.id.back_btn);
         title = (TextView) findViewById(R.id.title_action_bar);
+        back.setVisibility(View.GONE);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{"Manifest.permission.CAMERA"}, 0);
         } else {
-            if (savedInstanceState != null) {
+            /*if (savedInstanceState != null) {
                 getFragmentManager().getFragment(savedInstanceState, "my_movie_fragment");
             } else {
                 LoadMainFragment();
-            }
-            /*LoadMainFragment();*/
+            }*/
+            LoadMainFragment();
         }
         back.setOnClickListener(new View.OnClickListener() {
             @Override

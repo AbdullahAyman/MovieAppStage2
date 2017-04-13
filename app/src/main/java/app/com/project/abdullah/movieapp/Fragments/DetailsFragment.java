@@ -67,6 +67,8 @@ public class DetailsFragment extends Fragment {
     ArrayList<TrailerArrayData> trailerArrayDatas;
     String fav = "0";
 
+    public DetailsFragment() {
+    }
     public DetailsFragment(MovieDetailData movieDetailData) {
         this.movieDetailData = movieDetailData;
     }
