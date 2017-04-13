@@ -27,7 +27,15 @@ import app.com.project.abdullah.movieapp.R;
 public class MainActivity extends AppCompatActivity implements CallBackInterface{
     ImageView back;
     TextView title;
+    Fragment gridFragment;
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (gridFragment != null && gridFragment.isAdded()) {
+            getFragmentManager().putFragment(outState, "my_movie_fragment", gridFragment);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,12 @@ public class MainActivity extends AppCompatActivity implements CallBackInterface
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{"Manifest.permission.CAMERA"}, 0);
         } else {
-            LoadMainFragment();
+            if (savedInstanceState != null) {
+                getFragmentManager().getFragment(savedInstanceState, "my_movie_fragment");
+            } else {
+                LoadMainFragment();
+            }
+            /*LoadMainFragment();*/
         }
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements CallBackInterface
     private void LoadMainFragment() {
         back.setVisibility(View.GONE);
         title.setText("Movie App");
-        Fragment gridFragment = new GridFragment(this);
+        gridFragment = new GridFragment(this);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.main_fragment, gridFragment).commit();
     }
